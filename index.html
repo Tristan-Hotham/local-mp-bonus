@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Local MP bonus | Does a local MP get a local bonus?</title>
+<meta name="description" content="Every MP elected 1832 to 2024: do MPs born near their seat win more votes, swing better and lose less often? About 1.3 points more of the vote, but no fewer defeats.">
+<meta property="og:title" content="Does a local MP get a local bonus?">
+<meta property="og:description" content="31,737 MP returns, 1832 to 2024: MPs born within 25 km of their seat win about 1.3 points more of the vote than other MPs elected for the same seat, net of their party's national result, but are defeated no less often.">
+<meta property="og:image" content="https://maps.tristanhotham.com/local-mp-bonus/header.png">
+<meta property="og:url" content="https://maps.tristanhotham.com/local-mp-bonus/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+:root{
+  --bg:#FBF8F1; --panel:#F3EEE3; --fg:#22201C; --muted:#6B655B; --rule:#E3DDD0; --card:#FFFDF8; --border:#CFC6B4;
+  --loc:#C2410C; --non:#3B6EA8;
+  --display:"Fraunces",Georgia,serif; --body:"Source Serif 4",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#18171A; --panel:#222026; --fg:#ECE7DE; --muted:#AAA397; --rule:#34313A; --card:#1E1C21; --border:#4A4650; --loc:#F08A4B; --non:#8DB4E2; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#18171A; --panel:#222026; --fg:#ECE7DE; --muted:#AAA397; --rule:#34313A; --card:#1E1C21; --border:#4A4650; --loc:#F08A4B; --non:#8DB4E2; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 18px/1.62 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+.wrap{max-width:720px;margin:0 auto;padding-block:28px 64px}
+a{color:inherit;text-decoration-color:var(--loc);text-underline-offset:3px}
+h2{font:800 32px/1.06 var(--display);margin:52px 0 10px;text-wrap:balance}
+h2 .n{font:500 13px/1 var(--mono);color:var(--loc);display:block;letter-spacing:.1em;margin-bottom:10px}
+p{margin:0 0 16px}
+.byline{font:400 13px/1.4 var(--mono);color:var(--muted);margin-top:12px}
+.src{font:400 12px/1.45 var(--mono);color:var(--muted);margin-top:8px}
+.figure{margin:22px 0}.figure img{width:100%;display:block;border:1px solid var(--rule);background:#FBF8F1}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:22px 0}
+.stat b{display:block;font:800 38px/1 var(--display);color:var(--loc)}
+.stat span{font:400 13px/1.35 var(--mono);color:var(--muted)}
+details{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 0;margin:18px 0;font-size:16px}
+summary{font:500 13px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted)}
+ul.plain{padding-left:20px} ul.plain li{margin:4px 0}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0}
+.cta a{font:500 13px/1 var(--mono);text-decoration:none;border:1px solid var(--fg);padding:11px 14px;border-radius:3px}
+.cta a.p{background:var(--loc);border-color:var(--loc);color:#fff}
+footer{border-top:4px double var(--fg);margin-top:56px;padding-top:16px;font:400 13px/1.55 var(--mono);color:var(--muted)}
+footer p{margin:0 0 10px}
+table.t{width:100%;border-collapse:collapse;font:400 13.5px/1.4 var(--mono);margin:12px 0 4px}
+table.t th{text-align:left;font-weight:500;border-bottom:2px solid var(--fg);padding:5px 6px 5px 0}
+table.t td{border-bottom:1px solid var(--rule);padding:5px 6px 5px 0;vertical-align:top}
+table.t .r{text-align:right}
+.tscroll{overflow-x:auto}
+.theme{font:500 12px/1 var(--mono);background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:4px 8px;cursor:pointer;min-height:28px}
+.topbar{height:42px;display:flex;align-items:center;gap:14px;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(14px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--rule);background:var(--bg);white-space:nowrap;overflow:hidden}
+.tb-name{font:800 18px/1 var(--display);color:var(--fg);text-decoration:none}
+.tb-k{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tb-links{margin-left:auto;display:flex;gap:16px;align-items:center;font:500 12px/1 var(--mono)}
+.tb-links a{text-decoration:none}
+.mapband{width:100vw;margin-left:calc(50% - 50vw)}
+.pane{position:relative;height:calc(100vh - 43px);height:calc(100svh - 43px);min-height:480px;background:#EEF0F2;overflow:hidden}
+#map{position:absolute;inset:0}
+.card{position:absolute;z-index:5;background:rgba(255,253,248,.96);color:#22201C;border:1px solid #CFC6B4;border-radius:6px;box-shadow:0 3px 14px rgba(30,25,15,.16)}
+.title{left:14px;top:14px;max-width:min(360px,calc(100% - 28px));padding:12px 16px}
+.title h1{font:800 clamp(22px,2.3vw,30px)/1.04 var(--display);margin:4px 0 0}
+.title h1 em{font-style:normal;color:#C2410C}
+.title .dek{font-size:14px;line-height:1.4;margin:7px 0 0}
+.title .byline{font-size:11px;color:#6B655B;margin-top:6px}
+.kick{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#6B655B}
+.fold{position:absolute;right:6px;top:4px;border:0;background:none;font:500 16px/1 var(--mono);color:#6B655B;cursor:pointer;min-width:30px;min-height:30px}
+.unfold{display:none;font:600 14px/1 var(--mono);border:0;background:none;color:#C2410C;cursor:pointer;min-height:32px;padding:0}
+.title.folded .tb,.title.folded .fold{display:none}.title.folded .unfold{display:block}.title.folded{padding:4px 12px}
+.ctl{right:54px;top:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;background:none;border:0;box-shadow:none;max-width:calc(100% - 470px)}
+.srch{position:relative;width:min(320px,100%)}
+.srch input{width:100%;font:400 15px/1 var(--mono);background:#FFFDF8;color:#22201C;border:1px solid #CFC6B4;border-radius:4px;padding:9px 10px;min-height:40px}
+.sug{position:absolute;left:0;right:0;top:100%;margin:2px 0 0;padding:0;list-style:none;background:#FFFDF8;border:1px solid #CFC6B4;max-height:300px;overflow:auto;display:none;z-index:12;color:#22201C}
+.sug li{padding:8px 10px;cursor:pointer;border-bottom:1px solid #EEE7DA;font:400 14px/1.3 var(--mono)}
+.sug li span{color:#6B655B;font-size:12px}
+.sug li[aria-selected="true"],.sug li:hover{background:#F3EEE3}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.maplibregl-popup{z-index:7}
+.chip{font:500 12px/1 var(--mono);background:#FFFDF8;color:#22201C;border:1px solid #CFC6B4;border-radius:999px;padding:8px 11px;cursor:pointer;min-height:34px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:#C2410C;color:#fff;border-color:#C2410C}
+.chip.lyr{background:#22201C;color:#FBF8F1;border-color:#22201C}
+.lp{right:54px;top:110px;z-index:9;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);display:none;min-width:250px}
+.lp.open{display:block}
+.lp h4{margin:0 0 6px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#6B655B}
+.lp label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer;min-height:30px}
+.lp input{accent-color:#C2410C;width:16px;height:16px}
+.key{left:14px;bottom:28px;padding:9px 12px;font:400 12px/1.3 var(--mono);width:260px}
+.key b{display:block;font:600 13px/1.2 var(--body);margin-bottom:5px}
+.ramp{height:10px;border-radius:2px;background:linear-gradient(90deg,#F4E9DC,#E9A66B,#C2410C,#6E2207)}
+.ends{display:flex;justify-content:space-between;font-size:10.5px;color:#6B655B;margin-top:2px}
+.bonus{margin-top:8px;padding-top:7px;border-top:1px solid #E3DDD0}
+.bonus .v{font:800 22px/1 var(--display);color:#C2410C}
+.nodata{display:inline-block;width:10px;height:10px;border-radius:50%;background:#BDB7AD;border:1px solid #fff;vertical-align:-1px;margin-right:5px}
+.maplibregl-popup-content{background:#FFFDF8;color:#22201C;font:400 12.5px/1.4 var(--mono);border:1px solid #CFC6B4;border-radius:5px;padding:10px 12px;max-width:340px;max-height:56vh;overflow:auto}
+.maplibregl-popup-content b.t{display:block;font:700 18px/1.15 var(--display);margin-bottom:2px;padding-right:14px}
+.maplibregl-popup-content table{border-collapse:collapse;margin:6px 0;width:100%}
+.maplibregl-popup-content td{padding:2px 6px 2px 0;border-bottom:1px solid #EEE7DA;vertical-align:top}
+.maplibregl-popup-content td.r{text-align:right;white-space:nowrap}
+.maplibregl-popup-content .nt{color:#6B655B;font-size:11px}
+.maplibregl-popup-content .lc{color:#C2410C;font-weight:500}
+.maplibregl-popup-content a{color:#C2410C}
+.maplibregl-ctrl-attrib{font:400 11px/1.3 var(--mono)!important}
+.nojs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 14px var(--mono);color:#6B655B;padding:20px;text-align:center}
+.bonus-tbl td:first-child{white-space:nowrap}
+@media (max-width:900px){.ctl{left:10px;right:54px;max-width:none;align-items:flex-start}.chips{justify-content:flex-start}.title{top:112px}.lp{left:10px;right:auto}}
+@media (max-width:600px){
+  .tb-k,.tb-links a.x{display:none}.topbar{gap:10px}.tb-name{font-size:15px}.tb-links{gap:10px}
+  .pane{height:80svh;min-height:540px}
+  .title{left:8px;top:104px;max-width:calc(100% - 16px)}.unfold{display:block}.fold{display:none}
+  .ctl{left:8px;top:8px}.chip{padding:7px 8px;font-size:11.5px;flex:0 0 auto}
+  .chips{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none;justify-content:flex-start}.chips::-webkit-scrollbar{display:none}
+  .key{left:8px;bottom:34px;width:auto;right:60px;padding:7px 9px}.key .exp{display:none}
+  .lp{top:112px;left:8px;right:8px;min-width:0}
+}
+</style></head>
+<body>
+<div class="topbar">
+  <a class="tb-name" href="#mapWrap">The local MP bonus</a>
+  <span class="tb-k">Data study · 2026</span>
+  <nav class="tb-links"><a href="#essay">About</a><button class="theme" id="theme" aria-label="Toggle dark mode">◐</button><a href="https://doi.org/10.5281/zenodo.24092361">Paper</a><a class="x" href="https://github.com/Tristan-Hotham/local-mp-bonus">Data and code</a></nav>
+</div>
+<div class="mapband">
+  <div class="pane" id="mapWrap" data-fullscreen-map role="application" aria-label="Map of UK constituencies coloured by the share of their MPs born locally">
+    <div id="map"></div>
+    <div class="nojs" id="nojs">Loading the map. It needs JavaScript and WebGL.</div>
+    <div class="card title" id="title">
+      <button class="unfold" id="unfold">The local MP bonus ▾</button>
+      <button class="fold" id="fold" aria-label="Fold the title">▴</button>
+      <div class="tb">
+        <div class="kick">Data study · 1832 to 2024</div>
+        <h1>Does a <em>local</em> MP get a local bonus?</h1>
+        <p class="dek">Every constituency since 1832, coloured by the share of its MPs born within 25 km. Pick an era, then tap a seat for its MPs, where they were born and the share of the vote they won.</p>
+        <div class="byline">Dr Tristan Hotham · Independent researcher · 2026</div>
+      </div>
+    </div>
+    <div class="card ctl">
+      <div class="srch"><input type="search" id="q" placeholder="Find a constituency" aria-label="Find a constituency" autocomplete="off"><ul class="sug" id="sug" role="listbox"></ul></div>
+      <div class="chips" id="eras"><button class="chip lyr" id="lyrBtn" aria-expanded="false" aria-controls="lp">Layers</button><button class="chip" data-era="all" aria-pressed="false">All years</button><button class="chip" data-era="e1" aria-pressed="false">1832 to 1917</button><button class="chip" data-era="e2" aria-pressed="false">1918 to 1944</button><button class="chip" data-era="e3" aria-pressed="false">1945 to 2009</button><button class="chip" data-era="e4" aria-pressed="true">2010 to 2024</button></div>
+    </div>
+    <div class="card lp" id="lp" role="dialog" aria-label="Map layers">
+      <h4>Layers</h4>
+      <label><input type="checkbox" id="lyS" checked> Seats with MPs whose birthplace is known</label>
+      <label><input type="checkbox" id="lyN" checked> Seats with no known birthplace (grey)</label>
+      <label><input type="checkbox" id="lyL" checked> Seat names (zoom in)</label>
+      <label><input type="checkbox" id="lyB" checked> Base map place names</label>
+      <label><input type="checkbox" id="lyK" checked> Key and bonus box</label>
+    </div>
+    <div class="card key" id="key"><b>MPs born within 25 km of the seat</b><div class="ramp"></div><div class="ends"><span>none</span><span>half</span><span>all</span></div>
+      <div class="exp" style="margin-top:5px"><span class="nodata"></span>no MP with a known birthplace</div>
+      <div class="bonus" id="bonusBox"></div></div>
+  </div>
+</div>
+<div class="wrap" id="essay">
+<p style="margin-top:6px">Ask voters what they want in an MP and "someone local" comes near the top of the list. Parties have noticed: since 2010 the share of MPs born near their seat has climbed to the highest level since records begin. But does being local actually win votes? I took every MP elected at a general election from 1832 to 2024, where they were born and how they did, and compared local MPs with other MPs who sat for the same seat, each measured against how their party did nationally.</p>
+<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: Born and bred? (Wikidata, Wikipedia) and Who won here? (UK Parliament, House of Commons Library) · Base map: OpenFreeMap Positron (OpenStreetMap)</div>
+<div class="stats">
+<div class="stat"><b>31,737</b><span>MP returns at 49 general elections, 1832 to 2024</span></div>
+<div class="stat"><b>+1.3</b><span>points of vote share for an MP born within 25 km, compared within the same seat (95% CI 0.7 to 1.8)</span></div>
+<div class="stat"><b>14.6%</b><span>of local incumbents standing again were defeated; 14.5% of the rest</span></div>
+<div class="stat"><b>43%</b><span>of MPs elected in 2024 were born locally, against 26% in 2005</span></div>
+</div>
+
+<h2><span class="n">01 · The bonus</span>About one point in a hundred</h2>
+<p>The fairest comparison is within a seat: the same constituency, different MPs over the years, each set against how their own party did nationally at the time. On that comparison, an MP born within 25 km of the seat won 1.3 more points of the vote than MPs from elsewhere who sat for the same seat (95% confidence interval 0.7 to 1.8, across 14,580 MP returns in contested single-member seats). Comparing only MPs of the same party in the same seat gives 1.3 points, and MPs winning a seat for the first time show the same bonus (1.3), so it is not just incumbency. Put another way, roughly one extra vote in every 78 cast.</p>
+<div class="figure"><img src="img/groups.jpg" alt="Dot and whisker chart of the local bonus in points of vote share for all MPs and by era, nation and party, nearly all above zero" loading="lazy"><p class="src">The local bonus by era, nation and party. Each line is a 95% confidence interval.</p></div>
+<p>The bonus shows up in England, Scotland and Wales, for Labour and for the Liberals and Liberal Democrats; for the Conservatives it is smaller (0.8 points) and less certain. It holds when local means within 10 km (1.2) or within 50 km (1.0), when it means born in the seat's county (0.9), with only the most reliable birthplaces, and when each nation or era is left out in turn (between 1.1 and 2.1 points).</p>
+
+<h2><span class="n">02 · But not at the count</span>No fewer defeats</h2>
+<p>A point of vote share is real but small. Most seats are won by far more: the median winning margin in contested single-member seats since 1832 is 17 points, and only 7.2% of contests since 1945 were closer than twice the bonus. So it is no surprise that local MPs who stood again were defeated just as often as anyone else: 14.6% against 14.5%, and +1.0 points once the party, election, nation and the MP's last result are taken into account (95% CI -0.3 to +2.3). Local MPs did not serve longer either: 3.0 general elections on average against 3.2.</p>
+<div class="figure"><img src="img/designs.jpg" alt="Two coefficient charts: four vote share designs with small positive or negative effects in the direction of a local bonus and a placebo at zero; and the defeat probability effect near zero" loading="lazy"><p class="src">Five designs. The vote-share designs point the same way; defeat does not move.</p></div>
+<p>Three other comparisons point the same way as the first. Local MPs did slightly better at re-election than non-local ones (+0.3 points of change, CI 0.1 to 0.6). When a seat passed from one MP of a party to another, the party did better when the newcomer was local and the old MP was not (+0.7 points per step, CI 0.1 to 1.2), and the newcomer's roots did not predict the party's change in the election before they arrived, which is reassuring. And when a local MP stood down, the party lost 0.9 points more than when a non-local MP did (CI -1.7 to -0.1), as if part of the vote had been personal.</p>
+
+<h2><span class="n">03 · Through time</span>More local MPs, no bigger bonus</h2>
+<p>The striking thing about recent Parliaments is how local they have become: 26% of MPs elected in 2005 were born within 25 km of their seat, and 43% in 2024. If parties chose local candidates because it wins votes, you might expect the bonus to be at its largest now. It is not. Since 2010 the estimated bonus is 0.3 points, with a confidence interval from -0.7 to 1.3 that includes zero; it was larger before 1945. A direct test (not in the original plan) puts the recent bonus 1.3 points below the earlier one, with an interval that only just excludes zero: a decline is possible, not proven.</p>
+<div class="figure"><img src="img/periods.jpg" alt="Two charts: the share of MPs born locally, flat at about a quarter from 1832 to 2005 and rising to over 40% by 2024; below it the local bonus by period, positive in most periods and close to zero since 2010" loading="lazy"><p class="src">Top: MPs born within 25 km of their seat. Bottom: the local bonus by period (exploratory splits).</p></div>
+<p>One reason may be that when nearly half of MPs are local, being local no longer marks anyone out; another is that the measure is noisier for recent intakes, many of them first elected in 2019 or 2024 and not yet tested at a second election.</p>
+<div class="figure"><img src="img/map.jpg" alt="Two maps of Great Britain with a dot for each constituency coloured from pale to dark orange by the share of its MPs born locally, 1945 to 2009 and 2010 to 2024; more dark dots in the later map, especially in the North East, Wales and Scotland" loading="lazy"><p class="src">Share of each seat's MPs born within 25 km, before and since 2010.</p></div>
+
+<h2><span class="n">04 · How sure</span>Checks and placebos</h2>
+<p>I wrote down the tests before running them, with what would count against a local bonus, and report the planned ones first. The main estimate barely moves with different fixed effects, ways of clustering the uncertainty, or definitions of local (0.9 to 1.5 points). Two placebos behave as they should. Shuffling who is local within each party and election gives estimates centred on 0.01; none of 500 shuffles came near the real one. Being born near a different, randomly chosen seat adds 0.27 points on its own, because random seats are sometimes next door, and little once real localness is in the model (a version added after a first run): 0.20 points on average, with the middle 95% of draws from -0.14 to 0.63.</p>
+<div class="figure"><img src="img/robust.jpg" alt="Coefficient chart of the local bonus under about twenty alternative choices, all between one and two points above zero, and a grey placebo row at zero" loading="lazy"><p class="src">The bonus under alternative choices, with a placebo at the bottom.</p></div>
+
+<h2><span class="n">05 · How I did this</span>Birthplaces, seats and like with like</h2>
+<p><b>The MPs.</b> From my earlier study Born and bred?, every MP returned at a general election from 1832 to 2024: 31,737 returns of 10,094 people, with the distance from birthplace to seat for 57% of returns. I linked each to its own result in Who won here? by constituency, election and surname (99.6% linked), and followed each MP to the next general election in the same seat: stood and won, stood and lost, or did not stand.</p>
+<p><b>The comparison.</b> The main model compares MPs within the same seat, net of everything that moved their party nationally at each election (seat fixed effects and election by party fixed effects), with uncertainty clustered by constituency. University seats and the Speaker are left out. Losing candidates have no birthplace unless they were an MP at some point, so the designs start from MPs.</p>
+<p><b>What this cannot say.</b> Birthplace stands in for roots: someone born in a nearby hospital town counts as local, someone who moved there at two does not. Seats are points, not boundaries, and boundaries changed. Birthplaces are known for fewer MPs before 1900, mostly the better known. All the designs start from people who won at least once, so this is about MPs, not every candidate. And this is observational: a local MP may also be a sign of a strong local party, which would itself win votes. The within-seat, hand-over and retirement designs reduce that worry, but do not remove it.</p>
+<details><summary>Sources and licences</summary>
+<ul class="plain">
+<li>MPs and birthplaces: Hotham (2026) <a href="https://maps.tristanhotham.com/mp-localness/">Born and bred?</a>, from Wikidata (CC0) and English Wikipedia (CC BY-SA 4.0).</li>
+<li>Results: Hotham (2026) <a href="https://maps.tristanhotham.com/elections-since-1832/">Who won here?</a>, from UK Parliament and House of Commons Library results (Open Parliament Licence v3.0).</li>
+<li>Base map: OpenFreeMap Positron, OpenStreetMap contributors (ODbL). MapLibre GL JS 4.7.1.</li>
+<li>Data CC BY-SA 4.0 (because some birthplaces come from Wikipedia); text and figures CC BY 4.0; code MIT. Contains Parliamentary information licensed under the Open Parliament Licence v3.0.</li>
+</ul></details>
+<div class="cta"><a class="p" href="https://doi.org/10.5281/zenodo.24092361">Read the paper</a><a href="https://github.com/Tristan-Hotham/local-mp-bonus">Data and code</a><a href="https://blog.tristanhotham.com/2026/10/31/local-mp-bonus/">Blog post</a></div>
+<footer>
+<p>Dr Tristan Hotham, Independent researcher. ORCID <a href="https://orcid.org/0000-0003-4931-9349">0000-0003-4931-9349</a>.</p>
+<p>Cite as: Hotham, T. (2026) Does a local MP get a local bonus? Birthplace and electoral performance of UK MPs, 1832 to 2024. Zenodo. <a href="https://doi.org/10.5281/zenodo.24092361">10.5281/zenodo.24092361</a></p>
+<p>Code: <a href="https://github.com/Tristan-Hotham/local-mp-bonus">github.com/Tristan-Hotham/local-mp-bonus</a> (MIT). Text and figures CC BY 4.0; data CC BY-SA 4.0.</p>
+<p>I wrote the text, with drafting and editing assistance from Claude (Anthropic), which also helped prepare the analysis code. I reviewed and checked all text and results.</p>
+</footer>
+</div>
+<script>window.BONUS={"all": {"b": 1.288403387850472, "lo": 0.7292502789631558, "hi": 1.8475564967377882, "local": 27.122628309173336}, "e1": {"b": 1.604, "lo": 0.559, "hi": 2.65, "local": 25.32}, "e2": {"b": 2.203, "lo": 0.544, "hi": 3.862, "local": 26.58}, "e3": {"b": 0.848, "lo": 0.116, "hi": 1.58, "local": 25.86}, "e4": {"b": 0.295, "lo": -0.738, "hi": 1.327, "local": 34.21}};</script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="js/page.js?v=20261109"></script>
+<!-- map-fullscreen v1 -->
+<style id="mfs-style">
+.mfs-btn{position:absolute;top:10px;right:10px;z-index:1001;width:34px;height:34px;border:2px solid rgba(0,0,0,.25);border-radius:4px;background:#fff;color:#222;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.mfs-btn:hover{background:#f2f2f2}
+.mfs-btn svg{width:18px;height:18px}
+.mfs-host.mfs-btn-left .mfs-btn{right:auto;left:54px}
+.mfs-fake{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:100000!important;border-radius:0!important}
+html.mfs-lock,html.mfs-lock body{overflow:hidden!important}
+:fullscreen.mfs-host{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;border-radius:0!important}
+</style>
+<script id="mfs-script">
+(function(){
+  var ICON_OPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICON_CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function poke(){setTimeout(function(){window.dispatchEvent(new Event('resize'));},60);setTimeout(function(){window.dispatchEvent(new Event('resize'));},400);}
+  function realFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function add(el){
+    if(el.__mfs)return; el.__mfs=1;
+    var cs=getComputedStyle(el); if(cs.position==='static')el.style.position='relative';
+    el.classList.add('mfs-host');
+    // avoid clashing with a top-right Leaflet control (e.g. "Map layers")
+    var tr=el.querySelector('.leaflet-top.leaflet-right');
+    if(tr&&tr.children.length){ el.classList.add('mfs-btn-left'); }
+    var b=document.createElement('button'); b.type='button'; b.className='mfs-btn';
+    b.title='Full screen map'; b.setAttribute('aria-label','Full screen map'); b.innerHTML=ICON_OPEN;
+    ['click','dblclick','mousedown','touchstart','wheel'].forEach(function(t){b.addEventListener(t,function(e){e.stopPropagation();},{passive:t!=='click'});});
+    function setIcon(on){b.innerHTML=on?ICON_CLOSE:ICON_OPEN;b.title=on?'Exit full screen':'Full screen map';b.setAttribute('aria-label',b.title);}
+    function exitFake(){el.classList.remove('mfs-fake');document.documentElement.classList.remove('mfs-lock');setIcon(false);poke();}
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      if(el.classList.contains('mfs-fake')){exitFake();return;}
+      if(realFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return;}
+      var req=el.requestFullscreen||el.webkitRequestFullscreen;
+      if(req){ try{ var p=req.call(el); if(p&&p.catch)p.catch(function(){el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke();}); }catch(err){el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke();} }
+      else { el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke(); }
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el.classList.contains('mfs-fake'))exitFake();});
+    ['fullscreenchange','webkitfullscreenchange'].forEach(function(t){document.addEventListener(t,function(){setIcon(realFS()===el);poke();});});
+    el.appendChild(b);
+  }
+  function scan(){
+    var els=document.querySelectorAll('[data-fullscreen-map], .leaflet-container, .maplibregl-map, .mapboxgl-map');
+    els.forEach(function(el){
+      if(el.closest('.mfs-host')&&!el.classList.contains('mfs-host'))return;
+      var r=el.getBoundingClientRect(); if(r.width<200||r.height<150)return;
+      add(el);
+    });
+  }
+  function start(){scan(); var n=0; var t=setInterval(function(){scan(); if(++n>20)clearInterval(t);},500);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start); else start();
+})();
+</script>
+<!-- /map-fullscreen -->
+
+<script src="https://maps.tristanhotham.com/assets/site-nav.js" defer></script>
+</body>
+</html>
